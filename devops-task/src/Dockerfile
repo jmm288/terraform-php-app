@@ -10,4 +10,4 @@ RUN apt update && apt-get update -y
 ADD . ${PROJECT_BASE}
 WORKDIR ${PROJECT_BASE}
 
-EXPOSE 5000
+EXPOSE 8000
