@@ -20,8 +20,10 @@ Please **update** this **README** file as part of the solution to **document the
 
 ### Part 1 Solution Below ###
 
-TODO: Provide DETAIL steps on how to run your provisioning code
+I made a terraform script that uses a few simple variables, outputs and provisions an ec2-instance.
 
+Execution Procedure:
+1.) In the provision_infra directory run: "terraform init && terraform fmt && terraform validate && terraform apply"
 ### Part 1 Solution Above ###
 
 ## Part 2: CI/CD
@@ -43,7 +45,7 @@ your own working pipeline.
 
 ### Part 2 Solution Below ###
 
-TODO: Provide CI/CD Pipeline
+Github Actions yaml files in Github.
 
 ### Part 2 Solution Above ###
 
