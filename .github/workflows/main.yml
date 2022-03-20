@@ -1,0 +1,10 @@
+name: GitHub Actions PHP Mode Transportation
+on: [push]
+jobs:
+  php_app_job:
+    runs-on: ubuntu-18.04
+    name: php app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - run: echo "The ${{ github.repository }} repository has been cloned."
