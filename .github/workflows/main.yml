@@ -8,3 +8,5 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - run: echo "The ${{ github.repository }} repository has been cloned."
+      - name: Build the Docker image
+      - run: docker build . --file devops-task/src/Dockerfile --tag php:$(date +%s)
