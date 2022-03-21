@@ -14,15 +14,6 @@ provider "aws" {
   region  = "us-west-2"
 }
 
-resource "aws_instance" "php_server" {
-  ami           = "ami-091500e582a8cd219"
-  instance_type = "t2.micro"
-
-  tags = {
-    Name = "PhpAppServer"
-  }
-}
-
 resource "aws_vpc" "vpc" {
     cidr_block = "10.0.0.0/24"
     enable_dns_support   = true
@@ -36,9 +27,25 @@ resource "aws_internet_gateway" "internet_gateway" {
     vpc_id = aws_vpc.vpc.id
 }
 
+variable "az_number" {
+  # Assign a number to each AZ letter used in our configuration
+  default = {
+    a = 1
+    b = 2
+    c = 3
+    d = 4
+    e = 5
+    f = 6
+  }
+}
+
+data "aws_availability_zone" "example" {
+  name = "us-west-2b"
+}
+
 resource "aws_subnet" "pub_subnet" {
     vpc_id                  = aws_vpc.vpc.id
-    cidr_block              = "10.0.0.0/24"
+    cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 4, var.az_number[data.aws_availability_zone.example.name_suffix])
 }
 
 
@@ -130,3 +137,13 @@ resource "aws_ecs_service" "php-app-worker" {
   task_definition = aws_ecs_task_definition.task_definition.arn
   desired_count   = 1
 }
+
+resource "aws_instance" "php_server" {
+  ami           = "ami-091500e582a8cd219"
+  instance_type = "t2.micro"
+  subnet_id     = aws_subnet.pub_subnet.id
+  tags = {
+    Name = "PhpAppServer"
+  }
+}
+
