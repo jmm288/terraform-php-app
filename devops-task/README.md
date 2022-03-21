@@ -61,8 +61,8 @@ your own working pipeline.
 ### Part 2 Solution Below ###
 
 ## Github Actions yaml file:
-
-`name: GitHub Actions PHP Mode Transportation
+`
+name: GitHub Actions PHP Mode Transportation
 env:
   AWS_REGION: us-west-2                       # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: php-app                     # set this to your Amazon ECR repository name
@@ -119,7 +119,8 @@ jobs:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true`
+        wait-for-service-stability: true
+`
 
 ## ECS Task Definition file:
 
