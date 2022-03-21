@@ -9,6 +9,6 @@ RUN apt update && apt-get update -y
 
 ADD . ${PROJECT_BASE}
 WORKDIR ${PROJECT_BASE}
-COPY . /var/www/html
+COPY devops-task/src/* /var/www/html
 
 EXPOSE 8000
