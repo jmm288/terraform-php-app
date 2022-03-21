@@ -1,8 +1,8 @@
 {
-  "family": "php-worker",
+  "family": "php-app",
   "containerDefinitions": [
     {
-      "name": "php-worker",
+      "name": "php-app",
       "image": "${REPOSITORY_URL}:latest",
       "cpu": 2,
       "memory": 300,
