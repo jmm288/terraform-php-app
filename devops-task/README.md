@@ -23,7 +23,22 @@ Please **update** this **README** file as part of the solution to **document the
 I made a terraform script that uses a few simple variables, outputs and provisions an ec2-instance.
 
 Execution Procedure:
+Verify Assumptions and ENV Setup are complete.
 1.) In the provision_infra directory run: "terraform init && terraform fmt && terraform validate && terraform apply"
+2.) After the infrastructure comes up, ssh into the instance and add ECS instance to ECS cluster via this command:
+"curl --proto "https" -o "/tmp/ecs-anywhere-install.sh" "https://amazon-ecs-agent.s3.amazonaws.com/ecs-anywhere-install-latest.sh" && bash /tmp/ecs-anywhere-install.sh --region "us-west-2" --cluster "my-php-app-cluster" --activation-id "1f4a002a-87a8-4643-9fdf-27e8dea77f5f" --activation-code "5IUPxZlq9759V/Fkp9Ma""
+
+Assumptions:
+1.) Aws-user must be created with corresponding AWS Access keys
+2.) Aws-user must have ec2/ecs/ecr permissions. 
+
+ENV Setup:
+1.) AWS Credentials must be exported to the ENV
+2.) AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY must be set in the GitHub Action repository secrets to allow GitHub Actions to push/pull.
+
+Considerations:
+1. ) I wanted to get the ECS Cluster to auto-recognize the ECS Instance I was creating. I couldn't get it to work in the amount of time I had though, I just went ahead and manually connected the instance to the cluster.
+
 ### Part 1 Solution Above ###
 
 ## Part 2: CI/CD
@@ -45,7 +60,69 @@ your own working pipeline.
 
 ### Part 2 Solution Below ###
 
-Github Actions yaml files in Github.
+Github Actions yaml file:
+name: GitHub Actions PHP Mode Transportation
+env:
+  AWS_REGION: us-west-2                       # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: php-app                     # set this to your Amazon ECR repository name
+  ECS_SERVICE: php-app-worker                 # set this to your Amazon ECS service name
+  ECS_CLUSTER: my-php-app-cluster             # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION: devops-task/src/provision_infra/task-definition.json # set this to the path to your Amazon ECS task definition
+  CONTAINER_NAME: php-app                     # set this to the name of the container in the containerDefinitions section of your task definition
+  REPOSITORY_URL: 435901930649.dkr.ecr.us-west-2.amazonaws.com/$ECR_REPOSITORY
+  
+on: [push]
+jobs:
+  deploy:
+    name: Deploy Php App
+    runs-on: ubuntu-18.04
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build . --file devops-task/src/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker build . --file devops-task/src/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true
+
+*************************
+ECS Task Definition file:
+*************************
 
 ### Part 2 Solution Above ###
 
