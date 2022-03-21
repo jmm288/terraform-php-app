@@ -15,10 +15,10 @@
             ],
             "essential": true,
             "environment": [],
-            "mountPoints": [
-	      "sourceVolume": "devops-task/src"
+            "mountPoints": [{
+	      "sourceVolume": "devops-task/src",
 	      "containerPath": "/var/www/html"
-	    ],
+	    }],
             "volumesFrom": []
         }
     ],
