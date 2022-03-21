@@ -60,7 +60,7 @@ your own working pipeline.
 
 ### Part 2 Solution Below ###
 
-## Github Actions yaml file ##
+## Github Actions yaml file is attached, it doesn't want to render pretty ##
 
 name: GitHub Actions PHP Mode Transportation
 env:
