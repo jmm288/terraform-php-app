@@ -27,18 +27,6 @@ resource "aws_internet_gateway" "internet_gateway" {
     vpc_id = aws_vpc.vpc.id
 }
 
-variable "az_number" {
-  # Assign a number to each AZ letter used in our configuration
-  default = {
-    a = 1
-    b = 2
-    c = 3
-    d = 4
-    e = 5
-    f = 6
-  }
-}
-
 data "aws_availability_zone" "example" {
   name = "us-west-2b"
 }
@@ -138,12 +126,69 @@ resource "aws_ecs_service" "php-app-worker" {
   desired_count   = 1
 }
 
+resource "aws_key_pair" "php_app" {
+  key_name   = "php-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCCx6D44j1TaaclAENXnjkYBFZdpTcraaNSFfuBtWNCWwQJpPgCZ3Tn6rV+Ircv0PxtIfqbztPR6Xv26X3jaSs5TazhI7Xd2Fkdhf7ix3uxCItGau2RJI7c9dNPMYDncUzqqODe2/WWAFYYf5wyqiboQ8dZ5MkLA931nhblHdsJ4pkMdrV0xi0iWtcuPsaPD85VNZmSMRppTN6NoGF7QdttIy6y0cdvdbe4zEaiPdexKAfJAsLhDfm07hzH6mqgT7sEtzUX72wkc5LqcoSS8AGLGxI2ucAYN2ymYa7gIRHj38szQvInCYCGbeOJrssxdV7O2fU+FZ6gsxLfZ3QXDTN/"
+}
+
+resource "aws_iam_role" "ecs_role" {
+  name = "ecs_role"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_instance_profile" "ecs_profile" {
+  name = "ecs_profile"
+  role = "${aws_iam_role.ecs_role.name}"
+}
+
+resource "aws_iam_role_policy" "test_policy" {
+  name = "test_policy"
+  role = "${aws_iam_role.ecs_role.id}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "ecs:*",
+        "ecr:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_instance" "php_server" {
   ami           = "ami-091500e582a8cd219"
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.pub_subnet.id
+  associate_public_ip_address = true
+  key_name = aws_key_pair.php_app.key_name
+  iam_instance_profile = "${aws_iam_instance_profile.ecs_profile.name}"
   tags = {
     Name = "PhpAppServer"
   }
+  user_data	= <<EOF
+  #!/bin/bash
+  echo "ECS_CLUSTER=my-php-app-cluster" >> /etc/ecs/ecs.config
+  EOF
 }
 
