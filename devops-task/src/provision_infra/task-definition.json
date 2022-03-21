@@ -24,7 +24,13 @@
     ],
     "family": "php-app",
     "revision": 4,
-    "volumes": [],
+    "volumes": [{
+		"name": "devops-task",
+		"dockerVolumeConfiguration": {
+			"scope": "task",
+			"driver": "local"
+		}
+	}],
     "status": "ACTIVE",
     "requiresAttributes": [
         {
