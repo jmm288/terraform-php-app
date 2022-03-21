@@ -15,22 +15,13 @@
             ],
             "essential": true,
             "environment": [],
-            "mountPoints": [{
-	      "sourceVolume": "devops-task",
-	      "containerPath": "/var/www/html"
-	    }],
+            "mountPoints": [],
             "volumesFrom": []
         }
     ],
     "family": "php-app",
     "revision": 4,
-    "volumes": [{
-		"name": "devops-task",
-		"dockerVolumeConfiguration": {
-			"scope": "task",
-			"driver": "local"
-		}
-	}],
+    "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
         {
