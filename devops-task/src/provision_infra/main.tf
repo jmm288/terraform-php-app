@@ -15,7 +15,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "php_server" {
-  ami           = "ami-07e60b7f43b05d68e"
+  ami           = "ami-091500e582a8cd219"
   instance_type = "t2.micro"
 
   tags = {
@@ -107,8 +107,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 
 resource "aws_ecs_task_definition" "task_definition" {
   family                = "php-app"
-  container_definitions = file("../task-definition.json")
-     
+  container_definitions = file("task-definition.json")     
 }
 
 resource "aws_ecs_service" "php-app-worker" {
