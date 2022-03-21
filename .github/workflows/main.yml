@@ -6,7 +6,8 @@ env:
   ECS_CLUSTER: my-php-app-cluster             # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: devops-task/src/task-definition.json # set this to the path to your Amazon ECS task definition
   CONTAINER_NAME: php-app                     # set this to the name of the container in the containerDefinitions section of your task definition
-
+  REPOSITORY_URL: 435901930649.dkr.ecr.us-west-2.amazonaws.com/$ECR_REPOSITORY
+  
 on: [push]
 jobs:
   deploy:
