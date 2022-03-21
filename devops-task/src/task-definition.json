@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "php-app",
-      "image": "${REPOSITORY_URL}:latest",
+      "image": "435901930649.dkr.ecr.us-west-2.amazonaws.com/php-app:latest",
       "cpu": 2,
       "memory": 300,
       "portMappings": [
