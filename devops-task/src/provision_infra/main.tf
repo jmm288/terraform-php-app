@@ -107,21 +107,8 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 
 resource "aws_ecs_task_definition" "task_definition" {
   family                = "php-app"
-  container_definitions = jsonencode([
-    {
-      name      = "php-app",
-      image	= "435901930649.dkr.ecr.us-west-2.amazonaws.com/php-app:latest",
-      cpu	= 2,
-      memory    = 300,
-      portMappings = [
-          {
-              containerPort = 80,
-              hostPort = 8000
-          }
-      ],
-      essential = true
-    }
- ])
+  container_definitions = file("../task-definition.json")
+     
 }
 
 resource "aws_ecs_service" "php-app-worker" {
