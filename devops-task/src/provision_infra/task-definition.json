@@ -16,7 +16,7 @@
             "essential": true,
             "environment": [],
             "mountPoints": [{
-	      "sourceVolume": "devops-task/src",
+	      "sourceVolume": "devops-task",
 	      "containerPath": "/var/www/html"
 	    }],
             "volumesFrom": []
