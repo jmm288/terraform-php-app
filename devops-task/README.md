@@ -62,7 +62,7 @@ your own working pipeline.
 
 ## Github Actions yaml file ##
 
-`name: GitHub Actions PHP Mode Transportation
+name: GitHub Actions PHP Mode Transportation
 env:
   AWS_REGION: us-west-2                       # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: php-app                     # set this to your Amazon ECR repository name
