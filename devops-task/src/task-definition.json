@@ -13,11 +13,7 @@
           }
       ],
       "essential": true,
-      "environment": [
-          {
-              "value": "production"
-          }
-      ]
+      "environment": []
     }
  ]
 }
