@@ -1,8 +1,23 @@
 {
-    "essential": true,
-    "memory": 512,
-    "name": "php-worker",
-    "cpu": 2,
-    "image": "${REPOSITORY_URL}:latest",
-    "environment": []
+  "family": "php-worker",
+  "containerDefinitions": [
+    {
+      "name": "php-worker",
+      "image": "${REPOSITORY_URL}:latest",
+      "cpu": 2,
+      "memory": 300,
+      "portMappings": [
+          {
+              "containerPort": 80,
+              "hostPort": 8000
+          }
+      ],
+      "essential": true,
+      "environment": [
+          {
+              "value": "production"
+          }
+      ]
+    }
+ ] ]
 }
