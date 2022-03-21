@@ -38,6 +38,7 @@ ENV Setup:
 
 Considerations:
 1. I wanted to get the ECS Cluster to auto-recognize the ECS Instance I was creating. I couldn't get it to work in the amount of time I had though, I just went ahead and manually connected the instance to the cluster.
+2. NEVER EVER commit a PPK key to a Github Repository. This is just for proof of concept.
 
 ### Part 1 Solution Above ###
 
