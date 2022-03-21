@@ -73,12 +73,28 @@ resource "aws_security_group" "ecs_sg" {
         cidr_blocks     = ["0.0.0.0/0"]
     }
 
+    ingress {
+        from_port       = 8000
+        to_port         = 8000
+        protocol        = "tcp"
+        cidr_blocks     = ["0.0.0.0/0"]
+    }
+
+
     egress {
         from_port       = 0
         to_port         = 65535
         protocol        = "tcp"
         cidr_blocks     = ["0.0.0.0/0"]
     }
+
+    egress {
+        from_port       = 8000
+        to_port         = 8000
+        protocol        = "tcp"
+        cidr_blocks     = ["0.0.0.0/0"]
+    }
+
 }
 
 resource "aws_ecr_repository" "php-app" {
@@ -89,14 +105,28 @@ resource "aws_ecs_cluster" "ecs_cluster" {
     name  = "my-php-app-cluster"
 }
 
-#resource "aws_ecs_task_definition" "task_definition" {
-#  family                = "php-app-worker"
-#  container_definitions = data.template_file.task_definition_template.rendered
-#}
+resource "aws_ecs_task_definition" "task_definition" {
+  family                = "php-app"
+  container_definitions = jsonencode([
+    {
+      name      = "php-app",
+      image	= "435901930649.dkr.ecr.us-west-2.amazonaws.com/php-app:latest",
+      cpu	= 2,
+      memory    = 300,
+      portMappings = [
+          {
+              containerPort = 80,
+              hostPort = 8000
+          }
+      ],
+      essential = true
+    }
+ ])
+}
 
-#resource "aws_ecs_service" "php-app-worker" {
-#  name            = "php-app-worker"
-#  cluster         = aws_ecs_cluster.ecs_cluster.id
-#  task_definition = aws_ecs_task_definition.task_definition.arn
-#  desired_count   = 1
-#}
+resource "aws_ecs_service" "php-app-worker" {
+  name            = "php-app-worker"
+  cluster         = aws_ecs_cluster.ecs_cluster.id
+  task_definition = aws_ecs_task_definition.task_definition.arn
+  desired_count   = 1
+}
