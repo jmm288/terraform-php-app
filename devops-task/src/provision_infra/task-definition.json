@@ -15,7 +15,10 @@
             ],
             "essential": true,
             "environment": [],
-            "mountPoints": [],
+            "mountPoints": [
+	      "sourceVolume": "/home/vagrant/aws-codedeploy/devops-task/src"
+	      "containerPath": "/var/www/html"
+	    ],
             "volumesFrom": []
         }
     ],
