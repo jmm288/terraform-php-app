@@ -24,20 +24,20 @@ I made a terraform script that uses a few simple variables, outputs and provisio
 
 Execution Procedure:
 Verify Assumptions and ENV Setup are complete.
-1.) In the provision_infra directory run: "terraform init && terraform fmt && terraform validate && terraform apply"
-2.) After the infrastructure comes up, ssh into the instance and add ECS instance to ECS cluster via this command:
-"curl --proto "https" -o "/tmp/ecs-anywhere-install.sh" "https://amazon-ecs-agent.s3.amazonaws.com/ecs-anywhere-install-latest.sh" && bash /tmp/ecs-anywhere-install.sh --region "us-west-2" --cluster "my-php-app-cluster" --activation-id "1f4a002a-87a8-4643-9fdf-27e8dea77f5f" --activation-code "5IUPxZlq9759V/Fkp9Ma""
+1. In the provision_infra directory run: "terraform init && terraform fmt && terraform validate && terraform apply"
+2. After the infrastructure comes up, ssh into the instance and add ECS instance to ECS cluster via this command:
+`curl --proto "https" -o "/tmp/ecs-anywhere-install.sh" "https://amazon-ecs-agent.s3.amazonaws.com/ecs-anywhere-install-latest.sh" && bash /tmp/ecs-anywhere-install.sh --region "us-west-2" --cluster "my-php-app-cluster" --activation-id "1f4a002a-87a8-4643-9fdf-27e8dea77f5f" --activation-code "5IUPxZlq9759V/Fkp9Ma"`
 
 Assumptions:
-1.) Aws-user must be created with corresponding AWS Access keys
-2.) Aws-user must have ec2/ecs/ecr permissions. 
+1. Aws-user must be created with corresponding AWS Access keys
+2. Aws-user must have ec2/ecs/ecr permissions. 
 
 ENV Setup:
-1.) AWS Credentials must be exported to the ENV
-2.) AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY must be set in the GitHub Action repository secrets to allow GitHub Actions to push/pull.
+1. AWS Credentials must be exported to the ENV
+2. AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY must be set in the GitHub Action repository secrets to allow GitHub Actions to push/pull.
 
 Considerations:
-1. ) I wanted to get the ECS Cluster to auto-recognize the ECS Instance I was creating. I couldn't get it to work in the amount of time I had though, I just went ahead and manually connected the instance to the cluster.
+1. I wanted to get the ECS Cluster to auto-recognize the ECS Instance I was creating. I couldn't get it to work in the amount of time I had though, I just went ahead and manually connected the instance to the cluster.
 
 ### Part 1 Solution Above ###
 
@@ -60,8 +60,8 @@ your own working pipeline.
 
 ### Part 2 Solution Below ###
 
-Github Actions yaml file:
-name: GitHub Actions PHP Mode Transportation
+##Github Actions yaml file:
+`name: GitHub Actions PHP Mode Transportation
 env:
   AWS_REGION: us-west-2                       # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: php-app                     # set this to your Amazon ECR repository name
@@ -118,12 +118,47 @@ jobs:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true
+        wait-for-service-stability: true`
 
-*************************
-ECS Task Definition file:
-*************************
-
+##ECS Task Definition file:
+`{
+    "taskDefinitionArn": "arn:aws:ecs:us-west-2:435901930649:task-definition/php-app:4",
+    "containerDefinitions": [
+        {
+            "name": "php-app",
+            "image": "435901930649.dkr.ecr.us-west-2.amazonaws.com/php-app:latest",
+            "cpu": 2,
+            "memory": 300,
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 8000,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": []
+        }
+    ],
+    "family": "php-app",
+    "revision": 4,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EXTERNAL",
+        "EC2"
+    ],
+    "registeredAt": "2022-03-20T22:08:46.460000-04:00",
+    "registeredBy": "arn:aws:iam::435901930649:user/jbarton"
+}`
 ### Part 2 Solution Above ###
 
 Good luck!
