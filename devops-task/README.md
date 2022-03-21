@@ -33,7 +33,7 @@ Assumptions:
 2. Aws-user must have ec2/ecs/ecr permissions. 
 
 ENV Setup:
-1. AWS Credentials must be exported to the ENV
+1. AWS Credentials must be exported to the ENV (devops-task/src/provision_infra/export_aws_credential_commands.sh should give you the rough idea)
 2. AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY must be set in the GitHub Action repository secrets to allow GitHub Actions to push/pull.
 
 Considerations:
